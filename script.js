@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- CONFIGURACIÓN DE FIREBASE ---
+    // Pega tu código de Firebase entre las llaves de abajo:
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_DOMINIO.firebaseapp.com",
+        projectId: "TU_PROYECTO_ID",
+        storageBucket: "TU_BUCKET.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     // --- Private Access Control ---
     const loginOverlay = document.getElementById('login-overlay');
     const mainApp = document.getElementById('main-app');
@@ -237,7 +252,59 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveNotes() {
         localStorage.setItem('my_notes', JSON.stringify(notes));
         renderNotesList();
+        
+        // Sincronizar con Firebase (Nube)
+        syncWithFirebase();
     }
+
+    async function syncWithFirebase() {
+        if (!db) return;
+        const statusDot = document.querySelector('.status-dot');
+        const statusText = document.querySelector('.status-text');
+        
+        try {
+            statusDot.classList.add('syncing');
+            statusText.textContent = "Sincronizando...";
+            
+            // Guardamos toda la colección de notas en un documento "user_data"
+            // (En el futuro esto se puede mejorar con autenticación individual)
+            await db.collection('iafcj_notes').doc('backup_local').set({
+                all_notes: notes,
+                last_updated: new Date().toISOString()
+            });
+            
+            statusDot.classList.remove('syncing');
+            statusDot.classList.add('synced');
+            statusText.textContent = "Nube";
+        } catch (error) {
+            console.error("Error sincronizando:", error);
+            statusDot.classList.remove('syncing');
+            statusText.textContent = "Error Sync";
+        }
+    }
+
+    async function loadNotesFromFirebase() {
+        if (!db) return;
+        try {
+            const doc = await db.collection('iafcj_notes').doc('backup_local').get();
+            if (doc.exists) {
+                const cloudNotes = doc.data().all_notes;
+                if (cloudNotes && cloudNotes.length > 0) {
+                    // Mezclamos o reemplazamos según prefieras. 
+                    // Aquí reemplazamos para asegurar que el celular vea lo de la PC.
+                    notes = cloudNotes;
+                    localStorage.setItem('my_notes', JSON.stringify(notes));
+                    renderNotesList();
+                    renderCalendar(currentMonth, currentYear);
+                }
+            }
+        } catch (error) {
+            console.error("Error cargando de la nube:", error);
+        }
+    }
+
+    // Cargar desde la nube al iniciar
+    loadNotesFromFirebase();
 
     function renderNotesList() {
         const searchTerm = searchInput.value.toLowerCase();
