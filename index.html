@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAFCJ | Mis Notas Personales</title>
+    <meta name="description" content="Aplicación de notas privada y moderna para miembros de la IAFCJ.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Dancing+Script:wght@400..700&family=Montserrat:wght@300;400;700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-card">
+            <div class="church-seal-container">
+                <span class="seal-icon">👑</span>
+                <span class="seal-icon">📖</span>
+                <span class="seal-icon">🕊️</span>
+            </div>
+            <h2>Acceso Privado</h2>
+            <p>Iglesia Apostólica de la Fe en Cristo Jesús</p>
+            <div class="password-group">
+                <input type="password" id="app-password" placeholder="Contraseña...">
+                <button id="toggle-pass" class="btn-text-tiny">Mostrar</button>
+            </div>
+            <button id="login-btn" class="btn-primary">Entrar</button>
+            <p id="login-error" class="error-msg hidden">Clave incorrecta. Inténtalo de nuevo.</p>
+        </div>
+    </div>
+
+    <div id="main-app" class="app-container hidden">
+        <!-- Mobile Header -->
+        <header class="mobile-nav">
+            <button id="menu-toggle" class="btn-icon">☰</button>
+            <div class="logo-small">IAFCJ</div>
+            <button id="mobile-new-note" class="btn-icon-gold">+</button>
+        </header>
+
+        <div class="app-content">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <div class="church-seal-logo">
+                            <span class="mini-icon">👑</span>
+                            <span class="mini-icon">📖</span>
+                        </div>
+                        <div class="logo-text">
+                            <h1 style="font-size: 1rem;">IAFCJ</h1>
+                            <span style="font-size: 0.6rem;">La Fe en Cristo Jesús</span>
+                        </div>
+                    </div>
+                    <button id="new-note-btn" class="btn-primary" title="Nueva Nota">
+                        <span class="icon">+</span> Nueva Nota
+                    </button>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Buscar notas...">
+                </div>
+
+                <div class="calendar-section">
+                    <div class="section-header">
+                        <span>📅 Calendario</span>
+                        <div class="cal-nav">
+                            <button id="prev-month" class="btn-icon-tiny" title="Mes Anterior">‹</button>
+                            <button id="next-month" class="btn-icon-tiny" title="Mes Siguiente">›</button>
+                        </div>
+                    </div>
+                    <div id="calendar-widget" class="calendar-widget">
+                        <!-- Calendario dinámico -->
+                    </div>
+                </div>
+
+                <nav class="notes-list" id="notes-list">
+                    <!-- Las notas se cargarán aquí dinámicamente -->
+                    <div class="empty-state">No hay notas todavía</div>
+                </nav>
+
+                <div class="categories-section bottom-aligned">
+                    <div class="section-header">
+                        <span>🏷️ Categorías</span>
+                        <button id="add-category-btn" class="btn-icon-tiny" title="Añadir Categoría">+</button>
+                    </div>
+                    <div id="categories-list" class="categories-list">
+                        <!-- Categorías dinámicas -->
+                    </div>
+                </div>
+
+                <div class="import-section">
+                    <button id="import-note-btn" class="btn-outline-small">📥 Importar Nota Secreta</button>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button id="focus-mode-btn" class="btn-icon" title="Modo Reposo Total">🧘</button>
+                    <div id="sync-status" class="sync-status" title="Estado de Sincronización">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Local</span>
+                    </div>
+                    <div class="user-info">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="avatar">
+                        <span>Usuario</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Editor Area -->
+            <main class="editor-area">
+                <div id="no-note-selected" class="no-selection">
+                    <div class="hero-content">
+                        <div class="church-seal-display">
+                            <div class="main-seal-circle">
+                                <span class="large-icon">👑</span>
+                                <span class="large-icon">📖</span>
+                                <span class="large-icon">🕊️</span>
+                            </div>
+                        </div>
+                        <h2>Iglesia Apostólica de la Fe en Cristo Jesús</h2>
+                        <p>Bienvenido a tu espacio personal de escritura y reflexión.</p>
+                    </div>
+                </div>
+
+                <div id="editor-container" class="editor-container hidden">
+                    <header class="editor-header">
+                        <input type="text" id="note-title-input" placeholder="Título de la nota..." class="title-input">
+                        <div class="note-meta">
+                            <span id="note-date" class="date-tag">31 Ene, 2026</span>
+                            <div class="editor-actions">
+                                <button id="delete-note-btn" class="btn-secondary" title="Eliminar Nota">🗑️</button>
+                                <button id="save-note-btn" class="btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="toolbar">
+                        <select id="font-family" class="tool-select" title="Tipo de Letra">
+                            <optgroup label="Modernas (Sans)">
+                                <option value="'Inter', sans-serif">Inter (Limpia)</option>
+                                <option value="'Outfit', sans-serif">Outfit (Moderna)</option>
+                                <option value="'Montserrat', sans-serif">Montserrat (Geométrica)</option>
+                            </optgroup>
+                            <optgroup label="Clásicas (Serif)">
+                                <option value="'EB Garamond', serif">EB Garamond (Tradicional)</option>
+                                <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                <option value="'Old Standard TT', serif">Old Standard (Histórica)</option>
+                            </optgroup>
+                            <optgroup label="Escritura (Handwriting)">
+                                <option value="'Caveat', cursive">Caveat (Firma)</option>
+                                <option value="'Dancing Script', cursive">Dancing (Fluida)</option>
+                            </optgroup>
+                            <optgroup label="Sistema">
+                                <option value="monospace">Mono (Código)</option>
+                            </optgroup>
+                        </select>
+
+                        <select id="font-size" class="tool-select" title="Tamaño de Letra">
+                            <option value="3">Normal</option>
+                            <option value="1">Muy Pequeña</option>
+                            <option value="2">Pequeña</option>
+                            <option value="4">Grande</option>
+                            <option value="5">Muy Grande</option>
+                            <option value="6">Título</option>
+                            <option value="7">Gigante</option>
+                        </select>
+
+                        <div class="separator"></div>
+
+                        <button data-command="bold" class="tool-btn" title="Negrita"><b>B</b></button>
+                        <button data-command="italic" class="tool-btn" title="Cursiva"><i>I</i></button>
+                        <button data-command="underline" class="tool-btn" title="Subrayado"><u>U</u></button>
+
+                        <div class="separator"></div>
+
+                        <div class="color-group">
+                            <label title="Color de Texto">🎨</label>
+                            <input type="color" id="color-picker" class="color-picker" title="Color de texto">
+                        </div>
+
+                        <div class="color-group">
+                            <label title="Resaltado">🖍️</label>
+                            <input type="color" id="bg-color-picker" class="color-picker" title="Resaltado (Fondo)"
+                                value="#ffffff">
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <button data-command="createLink" class="tool-btn" title="Insertar Enlace">🔗</button>
+                        <button id="insert-table-btn" class="tool-btn" title="Insertar Tabla">📊</button>
+                        <button data-command="insertHorizontalRule" class="tool-btn" title="Línea Divisoria">➖</button>
+
+                        <div class="separator"></div>
+
+                        <button data-command="insertUnorderedList" class="tool-btn">• Lista</button>
+                        <button data-command="insertOrderedList" class="tool-btn">1. Lista</button>
+
+                        <div class="separator"></div>
+
+                        <button id="insert-image-btn" class="tool-btn" title="Añadir Imagen">🖼️</button>
+                        <input type="file" id="image-upload-input" accept="image/*" class="hidden">
+                        <button id="camera-capture-btn" class="tool-btn" title="Tomar Foto">📸</button>
+                        <button id="emoji-picker-btn" class="tool-btn" title="Insertar Emoji">😀</button>
+                        <button id="voice-typing-btn" class="tool-btn" title="Dictado por Voz">🎙️</button>
+
+                        <div class="separator"></div>
+
+                        <button data-command="justifyLeft" class="tool-btn">⬅️</button>
+                        <button data-command="justifyCenter" class="tool-btn">↔️</button>
+                        <button data-command="justifyRight" class="tool-btn">➡️</button>
+
+                        <div class="separator"></div>
+
+                        <button id="export-pdf-btn" class="tool-btn" title="Exportar Nota">📄</button>
+                        <button id="share-note-btn" class="tool-btn" title="Compartir Nota Encriptada">📤</button>
+                        <div class="separator"></div>
+                        <button id="toggle-draw-btn" class="tool-btn" title="Modo Dibujar/Pintar">🎨 Dibujar</button>
+                    </div>
+
+                    <div class="drawing-toolbar hidden" id="drawing-toolbar">
+                        <button class="tool-btn brush-tool active" data-tool="pencil" title="Lápiz">✏️</button>
+                        <button class="tool-btn brush-tool" data-tool="marker" title="Marcador">🖍️</button>
+                        <button class="tool-btn brush-tool" data-tool="pen" title="Pluma">✒️</button>
+                        <button class="tool-btn brush-tool" data-tool="eraser" title="Borrador">🧼</button>
+                        <div class="separator"></div>
+                        <input type="color" id="draw-color" value="#b45309" class="color-picker-small">
+                        <input type="range" id="brush-size" min="1" max="30" value="3" class="brush-slider">
+                        <div class="separator"></div>
+                        <button id="clear-canvas" class="tool-btn">Vaciar</button>
+                        <button id="download-draw" class="tool-btn" title="Descargar Dibujo">💾</button>
+                    </div>
+
+                    <div class="editor-view-container">
+                        <canvas id="drawing-canvas" class="drawing-canvas hidden"></canvas>
+                        <div id="note-content" class="rich-editor" contenteditable="true"
+                            placeholder="Empieza a escribir aquí..."></div>
+                    </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="focus-overlay" class="focus-overlay hidden">
+        <div class="focus-content">
+            <h2 class="focus-quote">Modo Enfoque</h2>
+            <p>Escribe sin distracciones</p>
+            <button id="exit-focus-btn" class="btn-outline">Salir</button>
+        </div>
+    </div>
+
+    <!-- IA Asistente Ebed -->
+    <div id="ai-assistant" class="ai-assistant">
+        <div id="ai-chat-window" class="ai-chat-window hidden">
+            <div class="ai-chat-header">
+                <div class="ai-header-left">
+                    <span class="ai-avatar-mini">🕊️</span>
+                    <div>
+                        <div class="ai-title">Asistente Ebed</div>
+                        <div class="ai-status">En línea</div>
+                    </div>
+                </div>
+                <button id="close-chat" class="close-chat-btn">×</button>
+            </div>
+            <div id="ai-messages" class="ai-messages">
+                <div class="ai-msg bot">¡Hola! Soy tu asistente. Puedo ayudarte con versículos, resúmenes o dudas sobre
+                    las herramientas.</div>
+            </div>
+            <div class="ai-suggestions" id="ai-suggestions">
+                <button class="ai-chip" data-query="Dame un versículo">📖 Versículo</button>
+                <button class="ai-chip" data-query="Analiza mi nota">📝 Analizar</button>
+                <button class="ai-chip" data-query="¿Cómo dibujar?">🎨 Ayuda</button>
+            </div>
+            <div class="ai-chat-input">
+                <input type="text" id="ai-input" placeholder="Pregunta algo...">
+                <button id="send-ai-msg">�</button>
+            </div>
+        </div>
+        <button id="toggle-ai-chat" class="ai-fab" title="Asistente de IA">
+            <span>✨</span>
+        </button>
+    </div>
+
+    <!-- Firebase SDK (v9 Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
