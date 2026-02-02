@@ -35,14 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Aquí puedes cambiar tu contraseña
-    const MY_SECRET_PASSWORD =;
+    const MY_SECRET_PASSWORD = "gracia";
 
     function attemptLogin() {
         const inputPass = passwordInput.value.trim().toLowerCase();
         // Log para que el usuario pueda ver qué está fallando si abre la consola
         console.log("Probando password:", inputPass);
 
-        if (inputPass === "gracia" || inputPass === "1234") {
+        if (inputPass === MY_SECRET_PASSWORD || inputPass === "1234") {
             loginOverlay.classList.add('hidden');
             mainApp.classList.remove('hidden');
             renderNotesList();
@@ -927,16 +927,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Cloud Sync Logic (Firebase) ---
     // User needs to paste their config here for full sync
-    const firebaseConfig = {
-        apiKey: "AIzaSyDSlSw9TIPe3M_RBeEWhwaa7LFzKhSsZ1I",
-        authDomain: "notas-personales-iafcj.firebaseapp.com",
-        projectId: "notas-personales-iafcj",
-        storageBucket: "notas-personales-iafcj.firebasestorage.app",
-        messagingSenderId: "1052323292073",
-        appId: "1:1052323292073:web:af0f551374c104e93f5ab8"
-    };
-
-    let db = null;
     const syncStatusDot = document.querySelector('.status-dot');
     const syncStatusText = document.querySelector('.status-text');
 
@@ -953,10 +943,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    if (db) {
         try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
             console.log("Firebase conectado para sincronización.");
             updateSyncStatus('synced');
 
