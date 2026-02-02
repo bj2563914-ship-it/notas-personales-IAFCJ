@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURACIÓN DE FIREBASE ---
     // Pega tu código de Firebase entre las llaves de abajo:
     const firebaseConfig = {
-        apiKey: "TU_API_KEY",
-        authDomain: "TU_DOMINIO.firebaseapp.com",
-        projectId: "TU_PROYECTO_ID",
-        storageBucket: "TU_BUCKET.appspot.com",
-        messagingSenderId: "TU_SENDER_ID",
-        appId: "TU_APP_ID"
+        apiKey: "AIzaSyAkW2XkL5RNzmYJH1kImznwwuqnNOxz-f0",
+        authDomain: "notas-iafcj.firebaseapp.com",
+        projectId: "notas-iafcj",
+        storageBucket: "notas-iafcj.firebasestorage.app",
+        messagingSenderId: "977538562458",
+        appId: "1:977538562458:web:0ab0f99681e2be75346223"
     };
 
     // Inicializar Firebase
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Aquí puedes cambiar tu contraseña
-    const MY_SECRET_PASSWORD = "gracia";
+    const MY_SECRET_PASSWORD =;
 
     function attemptLogin() {
         const inputPass = passwordInput.value.trim().toLowerCase();
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveNotes() {
         localStorage.setItem('my_notes', JSON.stringify(notes));
         renderNotesList();
-        
+
         // Sincronizar con Firebase (Nube)
         syncWithFirebase();
     }
@@ -261,18 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!db) return;
         const statusDot = document.querySelector('.status-dot');
         const statusText = document.querySelector('.status-text');
-        
+
         try {
             statusDot.classList.add('syncing');
             statusText.textContent = "Sincronizando...";
-            
+
             // Guardamos toda la colección de notas en un documento "user_data"
             // (En el futuro esto se puede mejorar con autenticación individual)
             await db.collection('iafcj_notes').doc('backup_local').set({
                 all_notes: notes,
                 last_updated: new Date().toISOString()
             });
-            
+
             statusDot.classList.remove('syncing');
             statusDot.classList.add('synced');
             statusText.textContent = "Nube";
